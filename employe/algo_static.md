@@ -5,9 +5,6 @@
    4-Afficher Tous les  Employes 
    5-Quitter
 
-# Fonctionnalites   
-   a- 1-Ajouter un Employe +/- Affecter 
-   b- 3-Afficher les  Employe d'un Departement
   
 
 # Entity
@@ -106,20 +103,20 @@ Type TabDepartement =tableau [1..N]Departement
 
 # Services
 
-type EmployeService=Classe
+type static EmployeService=Classe
 Debut
-    prive employes:TabEmploye
-    prive nbreEmploye:entier
-    public EmployeService()
+    prive static employes:TabEmploye
+    prive static nbreEmploye:entier
+    prive EmployeService()
     Debut
     Fin
 
-    public fonction getNbreEmploye():entier
+    public static fonction getNbreEmploye():entier
     Debut
     retourner this.nbreEmploye
     Fin
 
-public fonction addEmploye(D employe:Employe):booleen
+public static fonction addEmploye(D employe:Employe):booleen
 Debut
    si(this.nbreEmploye<N) alors
        this.nbreEmploye <- this.nbreEmploye+1
@@ -129,7 +126,7 @@ Debut
    retourner Faux
 Fin
 
-public procedure getEmployes(D/R allEmployes:TabEmploye)
+public static procedure getEmployes(D/R allEmployes:TabEmploye)
 var
  i:entier
 Debut
@@ -138,7 +135,7 @@ Debut
    Fpour
 Fin
 
-public fonction  getEmployeByMatricule(D matricule:chaine): Employe|null
+public static fonction  getEmployeByMatricule(D matricule:chaine): Employe|null
 
     i:entier
 Debut
@@ -150,22 +147,22 @@ Debut
      retourner null
 Fin
 
-type DepartementService=Classe
+type static DepartementService=Classe
 Debut
-    prive departements:TabDepartement
-    prive nbreDepartement:entier
-    public DepartementService()
+    prive static departements:TabDepartement
+    prive static nbreDepartement:entier
+    prive DepartementService()
     Debut
     Fin
 
-    public fonction getNbreDepartement():entier
+    public static fonction getNbreDepartement():entier
     Debut
     retourner this.nbreDepartement
     Fin
 
 
 
-public procedure getDepartements(D/R allDepartement:TabDepartement)
+public static procedure getDepartements(D/R allDepartement:TabDepartement)
 var
  i:entier
 Debut
@@ -174,7 +171,7 @@ Debut
    Fpour
 Fin
 
-public fonction  updateEmploye(D  employeWithDept:Employe):booleen
+public static fonction  updateEmploye(D  employeWithDept:Employe):booleen
     
  i:entier
 Debut
@@ -191,13 +188,13 @@ FinClase
 
 # Views
 
-type EmployeView=Classe
+type static EmployeView=Classe
 Debut
  public EmployeView()
  Debut
  Fin
 
- public fonction saisieEmploye():Employe
+ public static fonction saisieEmploye():Employe
  var
    emp:Employe
    matricule,nom:chaine
@@ -217,7 +214,7 @@ Debut
     retourner  emp
  Fin
 
-public procedure afficheEmployes( D employes:TabEmploye,nbreEmploye:entier)
+public static procedure afficheEmployes( D employes:TabEmploye,nbreEmploye:entier)
  var 
   i:entier
  Debut
@@ -226,7 +223,7 @@ public procedure afficheEmployes( D employes:TabEmploye,nbreEmploye:entier)
    Fpour
  Fin
 
- public fonction selectionnerDepartement( D departements:TabDepartement,nbreDepart:entier):Departement
+ public static fonction selectionnerDepartement( D departements:TabDepartement,nbreDepart:entier):Departement
  var 
   i:entier
   indexDepart:entier
@@ -245,18 +242,15 @@ public procedure afficheEmployes( D employes:TabEmploye,nbreEmploye:entier)
 FinClasse
 
 # Principal
-type App=Classe
+type static App=Classe
 Debut
- public App()
+ prive App()
  Debut
  Fin
 
- public procedure main()
+ public static procedure main()
   var 
     choix:entier
-    empView:EmployeView
-    empServ:EmployeService
-    deptServ:DepartementService
     emp,empSerch:Employe
     result:booleen
     allEmployes:TabEmploye nbreEmp:entier
@@ -267,9 +261,7 @@ Debut
     allEmployesByDept:TabEmploye 
     matricule:chaine
  Debut
-     empView<--new EmployeView()
-     empServ<--new EmployeService()
-      deptServ<--new DepartementService()
+ 
    faire
      Ecrire("1-Ajouter un Employe")
      Ecrire("2-Afficher les  Employes d'un departement")
@@ -284,15 +276,15 @@ Debut
              Ecrire("Voulez vous Affecter un Departement a cette employe(O/N)")
              lire(rep)
              si(rep='O') alors
-                   deptServ.getDepartements(allDepartements)
-                   nbreDepart<--deptServ.getNbreDepartement()
-                   dept<--empView.selectionnerDepartement(allDepartements,nbreDepart)
+                   DepartementService.getDepartements(allDepartements)
+                   nbreDepart<--DepartementService.getNbreDepartement()
+                   dept<--EmployeView.selectionnerDepartement(allDepartements,nbreDepart)
                    //Relation  ManyToOne (Employe-->Departement)
                         emp.affecterDepartement(dept)
                    //Relation  OneToMany (Departement--->Employe)
                      dept.addEmploye(emp)
              Fsi
-               result<-- empServ.addEmploye(emp)
+               result<-- EmployeService.addEmploye(emp)
             si(result=Vrai) alors
               Ecrire("Employe ajouter avec success")
             sinon
@@ -300,15 +292,15 @@ Debut
             Fsi
 
         2: 
-             dept<--empView.selectionnerDepartement(allDepartements,nbreDepart)
+             dept<--EmployeView.selectionnerDepartement(allDepartements,nbreDepart)
              nbreEmpDept<--dept.getNbreEmploye()
              dept.getEmployes(allEmployesByDept)
-             empView.afficheEmployes(allEmployesByDept,nbreEmpDept)
+             EmployeView.afficheEmployes(allEmployesByDept,nbreEmpDept)
 
         3: 
-        empServ.getEmployes(allEmployes)
-        nbreEmp<--empServ.getNbreEmploye()
-        empView.afficheEmployes(allEmployes,nbreEmp)
+          EmployeService.getEmployes(allEmployes)
+          nbreEmp<--EmployeService.getNbreEmploye()
+          EmployeView.afficheEmployes(allEmployes,nbreEmp)
      
         4: 
           empSerch<--null
@@ -316,20 +308,20 @@ Debut
              Ecrire("Entrer le matricule de l'employe Recherche")
              lire(matricule)
              si(matricule!="") alors
-                empSerch<--empServ.getEmployeByMatricule(matricule)
+                empSerch<--EmployeService.getEmployeByMatricule(matricule)
              FinSi
          tanque(empSerch=null)
          si(empSerch.getDepartement()!=null)  alors
             Ecrire ("Cette Employe a deja un departement")
          sinon
-             dept<--empView.selectionnerDepartement(allDepartements,nbreDepart)
+             dept<--EmployeView.selectionnerDepartement(allDepartements,nbreDepart)
              //Relation  ManyToOne (Employe-->Departement)
                emp.affecterDepartement(dept)
              //Relation  OneToMany (Departement--->Employe)
               dept.addEmploye(emp)
 
               //Modifier employe dans le service
-               result<-- empServ.updateEmploye(emp)
+               result<-- EmployeService.updateEmploye(emp)
 
               si(result=Vrai) alors
                  Ecrire("Affectation reussie")
